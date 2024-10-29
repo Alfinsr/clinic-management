@@ -15,6 +15,10 @@ class PatientController extends Controller
     public function index()
     {
         $data = Patient::orderBy('id', 'asc')->get();
+        // dump(request('search'));
+        if (request('search')) {
+            $data->where('name' . 'like' . '%' . request('search') . '%');
+        }
         return view('pages.patients.index', compact('data'));
     }
     public function shows()

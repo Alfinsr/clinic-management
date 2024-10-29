@@ -13,6 +13,17 @@
         <div class="col">
             <div class="card">
                 <div class="card-header d-flex justify-content-end">
+                    <form class="form-inline col-sm-11">
+                            <div class="input-group input-group-sm">
+                              <input class="form-control form-control-navbar" type="search" id="search" name="search" placeholder="Cari Pasien" aria-label="Search" autocomplete="off">
+                              <div class="input-group-append">
+                                <button class="btn btn-navbar" type="submit">
+                                  <i class="fas fa-search"></i>
+                                </button>
+                            
+                              </div>
+                            </div>
+                          </form>
                     <a href="/patients/add" class="btn btn-sm btn-primary">
                         Tambah Pasien
                     </a>
