@@ -27,4 +27,14 @@ class RedirectIfAuthenticated
 
         return $next($request);
     }
+
+    protected function redirectTo($request)
+    {
+        // Cek apakah pengguna sudah login, jika iya arahkan ke halaman pasien
+        if (Auth::check()) {
+            return route('patients.index'); // atau halaman yang diinginkan setelah login
+        }
+
+        return route('login');
+    }
 }

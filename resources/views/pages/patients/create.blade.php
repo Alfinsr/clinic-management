@@ -75,7 +75,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="d-flex justify-content-end">
-                        <a href="/" class="btn btn-sm btn-outline-secondary mr-2">Batal</a>
+                        <a href="/patients" class="btn btn-sm btn-outline-secondary mr-2">Batal</a>
                         <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
                     </div>
                 </div>

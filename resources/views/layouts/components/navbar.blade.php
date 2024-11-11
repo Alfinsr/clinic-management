@@ -7,10 +7,13 @@
 
   <ul class="navbar-nav ml-auto">
     <li class="nav-item d-none d-sm-inline-block">
-      <a href="/patients" class="nav-link">Pasien</a>
-    </li>
-    <li class="nav-item d-none d-sm-inline-block">
-      <a href="/admin" class="nav-link">Admin</a>
+      <!-- Form logout dengan metode POST -->
+      <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+        @csrf
+        <button type="submit" class="nav-link" style="background:none; border:none; color: inherit;">
+          Logout
+        </button>
+      </form>
     </li>
   </ul>
 </nav>
