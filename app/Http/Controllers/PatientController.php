@@ -14,13 +14,26 @@ class PatientController extends Controller
 
     public function index()
     {
-        $data = Patient::orderBy('id', 'asc')->get();
-        // dump(request('search'));
+        $query = Patient::orderBy('id', 'asc');
+
         if (request('search')) {
-            $data->where('name' . 'like' . '%' . request('search') . '%');
+            $search = request('search');
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('id', intval($search));
         }
+
+        $data = $query->get();
+
+        if (request()->ajax()) {
+            return view('pages.patients.table', compact('data'))->render();
+        }
+
         return view('pages.patients.index', compact('data'));
     }
+
+
+
+
     public function shows()
     {
         //showing patient data
@@ -113,15 +126,19 @@ class PatientController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // Dalam PatientController
     public function update(Request $request, $id)
     {
+        $patient = Patient::findOrFail($id);
+
+        // Validasi dan update data pasien
         $request->validate([
             'name' => 'required',
-            'age' => 'required|integer',
-            'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'nullable', // Membuat phone_number opsional
-            'birthday' => 'nullable|date' // Membuat birthday opsional
+            'address' => 'required',
+            'age' => 'required|integer',
+            'birthday' => 'required|date',
+            'phone_number' => 'required',
         ], [
             'name.required' => 'Nama wajib diisi !',
             'age.required' => 'Umur wajib diisi !',
@@ -129,16 +146,16 @@ class PatientController extends Controller
             'gender.required' => 'Jenis Kelamin wajib diisi !',
         ]);
 
-        $patient = Patient::findOrFail($id);
         $patient->update($request->all());
 
-        // Redirect dengan pesan sukses
-        return redirect("/patients/edit/{$patient->id}")->with('success', [
+        // Menyimpan session success untuk pasien
+        return redirect()->route('patients.edit', ['id' => $id])->with('patient_success', [
             'id' => $patient->id,
             'name' => $patient->name,
-            'age' => $patient->age
+            'age' => $patient->age,
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.

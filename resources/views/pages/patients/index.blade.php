@@ -3,90 +3,64 @@
 @section('header')
 <div class="row mb-2">
     <div class="col-sm-6">
-      <h1>Pasien</h1>
-     </div>
-  </div>
+        <h1>Pasien</h1>
+    </div>
+</div>
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header d-flex justify-content-end">
-                    <form class="form-inline col-sm-11">
-                            <div class="input-group input-group-sm">
-                              <input class="form-control form-control-navbar" type="search" id="search" name="search" placeholder="Cari Pasien" aria-label="Search" autocomplete="off">
-                              <div class="input-group-append">
-                                <button class="btn btn-navbar" type="submit">
-                                  <i class="fas fa-search"></i>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    {{-- implementasi ajax --}}
+                    <form class="form-inline col-sm-11" id="searchForm" onsubmit="return false;">
+                        <div class="input-group input-group-sm" style="max-width: 300px;">
+                            <input class="form-control" type="search" id="search" name="search" 
+                                   placeholder="Cari Pasien" aria-label="Search" autocomplete="off">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" onclick="performSearch()">
+                                    <i class="fas fa-search"></i>
                                 </button>
-                            
-                              </div>
                             </div>
-                          </form>
-                    <a href="/patients/add" class="btn btn-sm btn-primary">
+                        </div>
+                    </form>
+                    <a href="/patients/add" class="btn btn-sm btn-success">
                         Tambah Pasien
                     </a>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                             <th>No</th>
-                             <th>Nama</th>
-                             <th>Jenis Kelamin</th>
-                             <th>Alamat</th>
-                             <th>Umur</th>
-                             <th>Tanggal Lahir</th>
-                             <th>Nomer HP</th>
-                             <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($data as $patient)
-                            <tr>
-                                <td>{{ $patient->id }}</td>
-                                <td>{{ $patient->name }}<tdh>
-                                <td>{{ $patient->gender }}</td>
-                                <td>{{ $patient->address }}</td>
-                                <td>{{ $patient->age }}</td>
-                                <td>{{ $patient->birthday }}</td>
-                                <td>{{ $patient->phone_number }}</td>
-                                <td>
-                                    <div class="d-flex">
-                                        <a href="/patients/edit/{{ $patient->id }}" class="btn btn-sm btn-warning mr-2">Edit</a>
-                                        <form id="delete-form-{{ $patient->id }}" action="/api/patients/{{ $patient->id }}" method="POST" style="display: none;">
-                                            <script>
-                                                function confirmDelete(patientId) {
-                                                    Swal.fire({
-                                                        title: 'Apakah Anda yakin?',
-                                                        text: "Data pasien akan dihapus dan tidak bisa dikembalikan!",
-                                                        icon: 'warning',
-                                                        showCancelButton: true,
-                                                        confirmButtonColor: '#3085d6',
-                                                        cancelButtonColor: '#d33',
-                                                        confirmButtonText: 'Ya, hapus!',
-                                                        cancelButtonText: 'Batal'
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            document.getElementById('delete-form-' + patientId).submit();
-                                                        }
-                                                    });
-                                                }
-                                            </script>
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $patient->id }})">Hapus</button>
-                                    </div>
-                                </td>
-                               </tr>   
-                            @endforeach
-                            
-                        </tbody>
-                    </table>
+                    {{-- Tabel pasien  --}}
+                    <div id="patientTable">
+                        @include('pages.patients.table', ['data' => $data])
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        let debounceTimer;
+        document.getElementById('search').addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(performSearch, 300); 
+        });
+
+        function performSearch() {
+            const searchQuery = document.getElementById('search').value;
+
+            fetch(`/patients?search=${searchQuery}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken 
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('patientTable').innerHTML = html;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
 @endsection

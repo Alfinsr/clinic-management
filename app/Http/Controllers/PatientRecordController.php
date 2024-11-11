@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PatientRecord;
+use App\Models\Patient;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PatientRecordController extends Controller
@@ -23,6 +25,11 @@ class PatientRecordController extends Controller
             ], 404);
         }
 
+        // Format tanggal untuk setiap riwayat kunjungan
+        foreach ($records as $record) {
+            $record->formatted_date = Carbon::parse($record->visit_date)->format('d F Y');
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Berhasil mengambil riwayat pasien',
@@ -35,37 +42,43 @@ class PatientRecordController extends Controller
      */
     public function create()
     {
-        //
+        // Form untuk membuat riwayat baru
     }
 
     /**
      * Store a newly created resource in storage.
      */
+    // Dalam PatientRecordController
     public function store(Request $request, $patient_id)
     {
-        //POST riwayat pasien
+        // Validasi input
         $request->validate([
             'visit_date' => 'required|date',
             'complaint' => 'required',
             'treatment' => 'required',
-            'blood_pressure' => 'required'
+            'blood_pressure' => 'required',
         ]);
 
+        // Data untuk disimpan
         $data = [
             'patient_id' => $patient_id,
             'visit_date' => $request->visit_date,
             'complaint' => $request->complaint,
             'treatment' => $request->treatment,
-            'blood_pressure' => $request->blood_pressure
+            'blood_pressure' => $request->blood_pressure,
         ];
 
+        // Menyimpan data riwayat kunjungan
         PatientRecord::create($data);
-        return response()->json([
-            'status' => true,
-            'message' => 'Berhasil menambahkan riwayat',
-            'data' => $data
-        ], 200);
+
+        // Menyimpan session success untuk riwayat kunjungan
+        return redirect()->route('patients.edit', ['id' => $patient_id])->with('record_success', [
+            'visit_date' => $request->visit_date,
+            'complaint' => $request->complaint,
+            'treatment' => $request->treatment,
+        ]);
     }
+
 
     /**
      * Display the specified resource.

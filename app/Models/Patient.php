@@ -16,4 +16,9 @@ class Patient extends Model
         'phone_number',
         'birthday'
     ];
+
+    public function patientRecords()
+    {
+        return $this->hasMany(PatientRecord::class);
+    }
 }

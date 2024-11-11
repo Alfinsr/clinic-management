@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Klinik Management</title>
 
   <!-- Google Font: Source Sans Pro -->
@@ -41,9 +42,6 @@
     </section>
     <!-- /.content -->
 
-    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
-      <i class="fas fa-chevron-up"></i>
-    </a>
   </div>
   <!-- /.content-wrapper -->
 

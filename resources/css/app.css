@@ -1,0 +1,5 @@
+.tanggal-column {
+    width: 200px; /* Sesuaikan dengan lebar yang diinginkan */
+    word-wrap: break-word;
+    white-space: nowrap;
+}
